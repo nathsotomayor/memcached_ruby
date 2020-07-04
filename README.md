@@ -41,7 +41,7 @@ Memcached handles a small number of basic commands. In this server it's implemen
 
 Clone the repository with the command line interface:
 
-`git clone https://github.com/nathsotomayor/memcached_ruby.git
+`git clone https://github.com/nathsotomayor/memcached_ruby.git`
 
 ### Execution:
 
