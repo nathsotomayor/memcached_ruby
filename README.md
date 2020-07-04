@@ -13,10 +13,12 @@ This server was develop in Ruby programming language
 
 ## Commands
 
+Memcached handles a small number of basic commands. In this server it's implement a subset of Memcached commands, with all of their allowed options.
+
 ### Storage Commands
 
 | Command | Function |
-----------------------
+|---------|----------|
 | set | Most common command. Store this data, possibly overwriting any existing data |
 | add | Store this data, only if it does not already exist |
 | append | Add this data after the last byte in an existing item |
@@ -28,6 +30,324 @@ This server was develop in Ruby programming language
 ### Retrieval commands:
 
 | Command | Function |
-----------------------
+|---------|----------|
 | get | Command for retrieving data. Takes one or more keys and returns all found items |
 | gets | An alternative get command for using with CAS. Returns a CAS identifier with the item |
+
+
+## How to use it
+
+### Download:
+
+Clone the repository with the command line interface:
+
+git clone https://github.com/nathsotomayor/memcached_ruby.git
+
+### Execution:
+
+#### Start the server
+
+Go to the project (repository) folder and execute the command:
+
+```bash
+memcached_ruby$ ruby bin/memcached_server.rb -p 2000
+Server running and listening on port 2000...
+```
+
+If you no provide the port this will be the port 2000 by default.
+
+#### Start the client
+
+Go to the project (repository) folder and execute the command:
+
+```bash
+memcached_ruby$ ruby bin/memcached_client.rb -p 2000
+```
+
+If you no provide the port this will be the port 2000 by default.
+
+
+## Usage examples
+
+### Storage commands
+* **Set:**
+ Store this data, possibly overwriting any existing data
+
+Syntax:
+
+```
+set key flags timetolive
+value
+```
+
+Example:
+
+```
+set any_key 1 100
+any_value
+STORED
+```
+
+* **Add:**
+ Store this data, only if it does not already exist
+
+Syntax:
+
+```
+add key flags timetolive
+value
+```
+
+Example:
+
+```
+Enter a command:
+add new_key 1 100
+new_value
+STORED
+
+Enter a command:
+add new_key 1 200
+other_value
+NOT_STORED
+```
+
+
+* **Append:**
+ Add this data after the last byte in an existing item
+
+Syntax:
+
+```
+append key flags timetolive
+value
+```
+
+Example:
+```bash
+Enter a command:
+append key 1 100
+other
+NOT_STORED
+
+Enter a command:
+add key 1 100
+value
+STORED
+
+Enter a command:
+append key 1 200
+other
+STORED
+```
+
+* **Prepend:**
+ Same as append, but adding new data before existing data
+ 
+Syntax:
+
+```
+prepend key flags timetolive
+value
+```
+
+Example:
+
+```
+Enter a command:
+prepend key 1 100
+other
+NOT_STORED
+
+Enter a command:
+add key 1 100
+value
+STORED
+
+Enter a command:
+prepend key 1 200
+other
+STORED
+```
+
+* **Replace:**
+ Store this data, but only if the data already exists
+
+Syntax:
+
+```
+replace key flags timetolive
+value
+```
+
+Example:
+
+```
+Enter a command:
+replace new_key 1 100
+new_value
+NOT_STORED
+
+Enter a command:
+add new_key 1 100
+new_value
+STORED
+
+Enter a command:
+replace new_key 1 200
+other_value
+STORED
+```
+
+* **Cas (Check and Set or Compare and Swap):**
+ An operation that stores data, but only if no one else has updated the data since you read it last
+ 
+Syntax:
+
+```
+cas key flags timetolive token
+value
+```
+
+Example:
+
+```
+Enter a command:
+cas key 1 100
+value
+ERROR
+
+Enter a command:
+cas key 1 100 9876
+value
+NOT_FOUND
+
+Enter a command:
+add key 1 100
+value
+STORED
+
+Enter a command:
+gets key
+VALUE key 1 9876
+value
+END
+
+Enter a command:
+cas key 0 200 9876
+othervalue
+STORED
+```
+
+### Retrieval commands
+
+* **Get:**
+ Command for retrieving data. Takes one or more keys and returns all found items
+Syntax
+
+`get key`
+or
+
+`get key1 key2 ...`
+
+Example:
+
+```
+Enter a command:
+get key
+NOT_FOUND
+
+Enter a command:
+add key 1 100
+value
+STORED
+
+Enter a command:
+get key
+VALUE key 1
+value
+END
+
+Enter a command:
+add other_key 2 100
+other_value
+STORE
+
+Enter a command:
+get key other_key
+VALUE key 1
+value
+VALUE other_key 2
+other_value
+END
+```
+
+* **Gets:**
+ An alternative get command for using with CAS. Returns a CAS identifier with the item
+
+Syntax:
+
+`gets key`
+or
+`gets ke1 key2 ...`
+
+Example:
+
+```
+Enter a command:
+gets key
+NOT_FOUND
+
+Enter a command:
+add key 1 100
+value
+STORED
+
+Enter a command:
+get key
+VALUE key 1 9876
+value
+END
+
+Enter a command:
+add other_key 2 100
+other_value
+STORE
+
+Enter a command:
+gets key other_key
+VALUE key 1 9876
+value
+VALUE other_key 2 6789
+other_value
+END
+```
+
+## Ruby unit tests
+Go to the project (repository) folder and execute the command:
+
+```bash
+memcached_ruby$ ruby tests/name_file_test.rb
+```
+
+The output should look like this:
+
+```bash
+Loaded suite tests/name_file_test
+Started
+.....
+Finished in 2.034542 seconds.
+---------------------------------------------------------------------------------------
+5 tests, 7 assertions, 0 failures, 0 errors, 0 pendings, 0 omissions, 0 notifications
+100% passed
+---------------------------------------------------------------------------------------
+2.46 tests/s, 3.44 assertions/s
+```
+
+## References
+
+Memcached: http://memcached.org/
+
+Full list of commands: http://lzone.de/cheat-sheet/memcached
+
+The protocol specification: https://github.com/memcached/memcached/blob/master/doc/protocol.txt
