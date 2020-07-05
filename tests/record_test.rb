@@ -1,34 +1,36 @@
 require File.expand_path('../../lib/memcached/record', __FILE__)
-require 'test/unit'
+require 'minitest/autorun'
 
-class RecordTest < Test::Unit::TestCase
+
+class TestRecord < Minitest::Test
   def setup
+    # Create an instance to use in test cases
     @record = Record.new(value: 'value', flags: '1', ttl: 1)
   end
 
-  def test_record_append
+  def test_append_registry
     @record.append_value('example')
     assert_equal('valueexample', @record.value)
   end
 
-  def test_record_prepend
+  def test_prepend_registry
     @record.prepend_value('example')
     assert_equal('examplevalue', @record.value)
   end
 
-  def test_record_replace
+  def test_replace_registry
     @record.replace_value(value: 'newvalue', flags: '3', ttl: 0)
     assert_equal('newvalue', @record.value)
     assert_equal('3', @record.flags)
   end
 
-  def test_record_expired
+  def test_expired_registry
     assert !@record.expired?
     sleep 1
     assert @record.expired?
   end
 
-  def test_record_not_expired
+  def test_not_expired_registry
     record = Record.new(value: 'value', flags: '1', ttl: 0)
     sleep 1
     assert !record.expired?
