@@ -326,21 +326,20 @@ END
 Go to the project (repository) folder and execute the command:
 
 ```bash
-memcached_ruby$ ruby tests/name_file_test.rb
+memcached_ruby$ ruby tests/test_name_file.rb
 ```
 
 The output should look like this:
 
 ```bash
-Loaded suite tests/name_file_test
-Started
-.....
-Finished in 2.034542 seconds.
----------------------------------------------------------------------------------------
-5 tests, 7 assertions, 0 failures, 0 errors, 0 pendings, 0 omissions, 0 notifications
-100% passed
----------------------------------------------------------------------------------------
-2.46 tests/s, 3.44 assertions/s
+Run options: --seed 9374
+
+# Running:
+
+.................
+
+Finished in 0.003744s, 4540.5982 runs/s, 5341.8802 assertions/s.
+17 runs, 20 assertions, 0 failures, 0 errors, 0 skips
 ```
 
 ## References
