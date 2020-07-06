@@ -171,7 +171,7 @@ class TestMemcached < Minitest::Test
   end
 
   def test_get_cas_registry
-    # returns_values_with_unique_token
+    # Case that etrieve values with unique token
     @memcached.process(@set_example)
     object_id = @memcached.storage[@set_example[:key]].object_id
     gets_args = { command: 'gets', keys: ['key'] }
